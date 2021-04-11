@@ -11,6 +11,10 @@ let firstCard, secondCard;
 
 var countFlipedCard = 0;
 
+var result = {};
+//localStorage.removeItem('result');
+restoreLeaderBoard();
+
 function flipCard() 
 {
   if (lockBoard) 
@@ -39,7 +43,6 @@ function checkForMatch()
   let isMatch = firstCard.dataset.framework === secondCard.dataset.framework;
 
   isMatch ? disableCards() : unflipCards() 
-   
 }
 
 function disableCards() 
@@ -49,11 +52,11 @@ function disableCards()
   point++;
   points.textContent = point;
   countFlipedCard = countFlipedCard + 2;
-  if (countFlipedCard === 64)
-  {
-    setTimeout(endGame(), 2000);
-  }
   resetBoard();
+  if (countFlipedCard === cards.length)
+  {
+    endGame();
+  }
 }
 
 function unflipCards()
@@ -63,18 +66,18 @@ function unflipCards()
   setTimeout(() => {
     firstCard.classList.remove('flip');
     secondCard.classList.remove('flip');
-    count--;
-    if (point > 0)
-      point--;
-    points.textContent = point;
-    sum.textContent = count;
-    if (count === 0)
-    {
-      endGame();
-    }
     resetBoard();
   }, 
-  1500);
+  1000);
+  count--;
+  if (point > 0)
+    point--;
+  points.textContent = point;
+  sum.textContent = count;
+  if (count === 0)
+  {
+    endGame();
+  }
 }
 
 function resetBoard()
@@ -91,8 +94,6 @@ function shuffle()
   });
 };
 
-cards.forEach(card => card.addEventListener('click', flipCard));
-
 function allCardsFlip()
 {
   cards.forEach(card => card.classList.add('flip'));
@@ -104,26 +105,25 @@ function unFlip()
 }
 
 function endGame()
-{
+{ 
   
   if (count > 0)
   {
     point = count * 2 + point;
     points.textContent = point;
   }
-  setTimeout(alerted, 500);
-  setTimeout(unFlip, 1000);
+  setTimeout(allCardsFlip, 2000);
+  setTimeout(alerted, 3000);
+  resetBoard();
 }
 
 function StartGame()
 {
-  cards = document.querySelectorAll('.memory-card');
-  hasFlippedCard = false;
-  lockBoard = false;
-  resetBoard();
+  cards.forEach(card => card.addEventListener('click', flipCard));
+  console.log(lockBoard);
   shuffle();
   allCardsFlip();
-  setTimeout(unFlip,5000);
+  setTimeout(unFlip,1000);
   point = 0;
   count = 3;
   sum.textContent = count;
@@ -134,14 +134,57 @@ function StartGame()
 function alerted()
 {
   var name = prompt("Игра окончена:\nВведите ваше имя!!!");
-  result [name] = point;
-  document.querySelector(".name").textContent = name;
-  document.querySelector(".result").textContent = result[name];
-  localStorage.setItem(result[name]);
-  
+  if (name) {
+    addLeaders(name);
+  }
+  localStorage.removeItem('result');
+  localStorage.setItem('result', JSON.stringify(result));
 }
 
-var result = 
-{
-  name : point
+function addLeaders(leaderName) {
+  let rows =  document.querySelector(".top-five").childNodes[1].children;
+  if (rows.length > 5) {
+    alert("Извините, Вы не попали в топ 5 лидеров.");
+  } else {
+    result[String(leaderName)] = point;
+    // Добавляем строку в таблицу
+    let row = createRow(leaderName, point);
+    if (rows.length < 2) {
+      document.querySelector(".top-five").childNodes[1].appendChild(row);
+    } else {
+      for (let i = 1; i < rows.length; ++i) {
+        if (Number(rows[i].querySelector(".point").textContent) < point) {
+           rows[i].before(row);
+        }
+      }
+    }
+  }
+}
+
+function restoreLeaderBoard() {
+  let rows =  document.querySelector(".top-five").childNodes[1].children;
+  if (localStorage.getItem('result') !== null) {
+    while(rows.length > 1) {
+      rows[1].remove();
+    }
+    let jsonData = localStorage.getItem('result');
+    result = JSON.parse(jsonData);
+    let arr = Object.keys(result).map((key) => [key, result[key]]);
+    for (let i = 0; i < arr.length; ++i) {
+      rows[i].after(createRow(arr[i][0], arr[i][1]));
+    }
+  }
+}
+
+function createRow(leaderName, pointNumber) {
+  let row = document.createElement('tr');
+  let tdName = document.createElement('td');
+  let tdPoints = tdName.cloneNode(true);
+  tdName.textContent = leaderName;
+  tdPoints.textContent = pointNumber;
+  tdPoints.classList.add("point");
+  row.appendChild(tdName);
+  row.appendChild(tdPoints);
+
+  return row;
 }
