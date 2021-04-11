@@ -6,10 +6,31 @@
   
   body {
     height: 100vh;
-   
+    display: flex;
     background: rgb(163, 164, 207)
   }
   
+  .sum, .points {
+    display: inline-block;
+  }
+
+  .top-five {
+    border-collapse: collapse;
+    border: 1px solid black;
+    min-width: 300px;
+  }
+
+  
+  .top-five th {
+    border: 1px solid black;
+    padding: 5px;
+  }
+
+  .top-five td {
+    border: 1px solid black;
+    padding: 5px;
+  }
+
   .memory-game {
     width: 800px;
     height: 800px;

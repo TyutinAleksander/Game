@@ -11,15 +11,27 @@
 
   <input id ="button" type="button" value="начать" onclick="StartGame()">
 
-<h2>попыток осталось:<div class="sum"></div></h2>
+ <div class="information">
+    <h2>попыток осталось: <div class="sum">3</div></h2>
 
-<br><h2>очки:<div class="points"></div></h2>
+    <h2>очки: <div class="points">0</div></h2>
+    <h2>Таблица лидеров</h2>
+    <table class="top-five">
+      <tr>
+        <th>Имя</th>
+        <th>Очки</th>
+      </tr>
+      <tr class="leaders">
+        <th>Имя</th>
+        <th class="point">5</th>
+      </tr>
+      <tr class="leaders">
+        <th>Имя</th>
+        <th class="point">4</th>
+      </tr>
+    </table>
+ </div>
 
-<br><table>
-  <tr>
-    <td class="name"></td> <td class = "result"></td>
-  </tr>
-</table>
 
   <section class="memory-game">
     <div class="memory-card" data-framework="aurelia">
